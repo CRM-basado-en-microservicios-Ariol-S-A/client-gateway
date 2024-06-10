@@ -11,12 +11,14 @@ export class ClientsController {
     @Inject(CLIENT_SERVICE) private readonly clientsClient: ClientProxy
   ) { }
 
+  @Get('seed')
+  seed() {
+    return this.clientsClient.send({ cmd: 'seedClient' }, {});
+  }
+
   @Post()
-  createClient(@Body() createClientDto: CreateClientDto) {
-    return this.clientsClient.send(
-      { cmd: 'createClient' },
-      createClientDto,
-    );
+  create(@Body() createClientDto: CreateClientDto) {
+    return this.clientsClient.send({ cmd: 'createClient' }, createClientDto );
   }
 
   @Get()
