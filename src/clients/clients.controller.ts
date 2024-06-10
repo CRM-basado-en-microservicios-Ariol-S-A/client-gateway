@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
 import { CLIENT_SERVICE } from 'src/config';
 import { CreateClientDto } from './dto/create-client.dto';
+import { UpdateClientDto } from './dto/update-client.dto';
 
 @Controller("clients")
 export class ClientsController {
@@ -47,11 +48,13 @@ export class ClientsController {
   }
 
   @Patch(':id')
-  udpateProduct(
-    @Body() body: any,
-    @Param('id') id: string,
+  udpateProduct(@Body() updateClientDto: UpdateClientDto, @Param('id') id: string,
   ) {
-    return this.clientsClient.send({ cmd: 'find_one_client' }, { id })
-
+    try {
+      return this.clientsClient.send({ cmd: 'updateClient' }, { id, updateClientDto })
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException(error);
+    }
   }
 }

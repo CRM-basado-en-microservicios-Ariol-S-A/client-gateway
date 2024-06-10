@@ -1,21 +1,4 @@
-
 import { IsArray, IsOptional, IsString } from 'class-validator';
-
-type Correos = {
-    id: number;
-    correo: string;
-    clienteId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
-
-type Telefonos = {
-    id: number;
-    telefono: string;
-    clienteId: string;
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 export class CreateClientDto {
     
@@ -42,7 +25,7 @@ export class CreateClientDto {
     
     @IsOptional()
     @IsArray()
-    correos?: Correos[];
+    correos?: string[];
 
     @IsOptional()
     @IsString()
@@ -50,6 +33,6 @@ export class CreateClientDto {
 
     @IsOptional()
     @IsArray()
-    telefonos?: Telefonos[];
+    telefonos?: string[];
 
 }
