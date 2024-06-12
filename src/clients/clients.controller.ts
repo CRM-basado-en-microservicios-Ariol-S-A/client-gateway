@@ -2,36 +2,36 @@ import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, Pars
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
-import { CLIENT_SERVICE } from 'src/config';
+import { NATS_SERVICE } from 'src/config';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 
 @Controller("clients")
 export class ClientsController {
   constructor(
-    @Inject(CLIENT_SERVICE) private readonly clientsClient: ClientProxy
+    @Inject(NATS_SERVICE) private readonly clientsClient: ClientProxy
   ) { }
 
   @Get('seed')
   seed() {
-    return this.clientsClient.send({ cmd: 'seedClient' }, {});
+    return this.clientsClient.send('seedClient', {});
   }
 
   @Post()
   create(@Body() createClientDto: CreateClientDto) {
-    return this.clientsClient.send({ cmd: 'createClient' }, createClientDto );
+    return this.clientsClient.send('createClient', createClientDto );
   }
 
   @Get()
   findAllClients(@Query() paginationDto: PaginationDto) {
-    return this.clientsClient.send({ cmd: 'findAllClients' }, paginationDto);
+    return this.clientsClient.send('findAllClients', paginationDto);
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
     try {
       const product = await firstValueFrom(
-        this.clientsClient.send({ cmd: 'find_one_client' }, { id })
+        this.clientsClient.send('find_one_client', { id })
       );
 
       return product;
@@ -44,14 +44,14 @@ export class ClientsController {
 
   @Delete(':id')
   deleteProduct(@Param('id') id: string) {
-    return this.clientsClient.send({ cmd: 'removeClient' }, id)
+    return this.clientsClient.send('removeClient', id)
   }
 
   @Patch(':id')
   udpateProduct(@Body() updateClientDto: UpdateClientDto, @Param('id') id: string,
   ) {
     try {
-      return this.clientsClient.send({ cmd: 'updateClient' }, { id, updateClientDto })
+      return this.clientsClient.send('updateClient', { id, updateClientDto })
     } catch (error) {
       console.log(error);
       throw new BadRequestException(error);
