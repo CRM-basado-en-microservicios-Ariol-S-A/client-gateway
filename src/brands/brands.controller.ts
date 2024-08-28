@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, Query, BadRequestException } from '@nestjs/common';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
 import { NATS_SERVICE } from 'src/config';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PaginationDto } from 'src/common';
+import { catchError, firstValueFrom } from 'rxjs';
 
 @Controller('brands')
 export class BrandsController {
@@ -13,8 +14,11 @@ export class BrandsController {
   ) { }
 
   @Post()
-  create(@Body() createBrandDto: CreateBrandDto) {
-    return this.client.send('createBrand', createBrandDto);
+  async create(@Body() createBrandDto: CreateBrandDto) {
+    return this.client.send('createBrand', createBrandDto)
+      .pipe( 
+        catchError( error => { throw new RpcException(error) })
+      )      
   }
 
   @Get()
